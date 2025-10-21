@@ -1,11 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-sing-up',
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './sing-up.html',
   styleUrl: './sing-up.css',
 })

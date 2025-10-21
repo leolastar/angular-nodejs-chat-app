@@ -1,6 +1,18 @@
-<form (ngSubmit)="submit()">
-  <input [(ngModel)]="email" name="email" placeholder="Email" />
-  <input [(ngModel)]="displayName" name="displayName" placeholder="Display Name" />
-  <input [(ngModel)]="password" name="password" placeholder="Password" type="password" />
-  <button>Create Account</button>
-</form>
+<div class="container">
+  <div class="form-wrapper">
+    <h1>Sign Up</h1>
+    <form (ngSubmit)="submit()" class="form">
+      <input [(ngModel)]="email" name="email" placeholder="Email" type="email" required />
+      <input [(ngModel)]="displayName" name="displayName" placeholder="Display Name" required />
+      <input
+        [(ngModel)]="password"
+        name="password"
+        placeholder="Password"
+        type="password"
+        required
+      />
+      <button type="submit" class="submit-btn">Create Account</button>
+    </form>
+    <p class="signin-link">Already have an account? <a [routerLink]="['/sing-in']">Sign In</a></p>
+  </div>
+</div>

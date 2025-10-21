@@ -19,11 +19,14 @@ export class AuthService {
   }
 
   signIn(email: string, password: string) {
-    return this.http.post<any>(`${environment.apiBase}/auth/sign-in`, { email, password });
+    return this.http.post<any>(`${environment.apiBase}:${environment.port}/auth/sign-in`, {
+      email,
+      password,
+    });
   }
 
   signUp(email: string, password: string, displayName: string) {
-    return this.http.post<any>(`${environment.apiBase}/auth/sign-up`, {
+    return this.http.post<any>(`${environment.apiBase}:${environment.port}/auth/sign-up`, {
       email,
       password,
       displayName,

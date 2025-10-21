@@ -3,4 +3,5 @@ export const environment = {
   apiBase: '/api',
   wsUrl: window.location.origin,
   wsPath: '/socket.io',
+  port: 4000,
 };
