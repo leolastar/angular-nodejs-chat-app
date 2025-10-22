@@ -22,9 +22,19 @@ export class SingIn {
       alert('Please enter your email and password');
       return;
     }
-    this.auth.signIn(this.email, this.password).subscribe((tokens: any) => {
-      this.auth.setTokens(tokens);
-      this.router.navigate(['/home']);
-    });
+    this.auth.signIn(this.email, this.password).subscribe(
+      (Response: any) => {
+        if (Response.result) {
+          console.log('Response', Response);
+          this.auth.setTokens(Response.user, Response.token);
+        } else {
+          alert(Response.message);
+        }
+      },
+      (error: any) => {
+        alert(error.error.message);
+        console.error(error);
+      }
+    );
   }
 }

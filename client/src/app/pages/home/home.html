@@ -1,1 +1,99 @@
-<p>home works!</p>
+<div class="container">
+  <div class="header">
+    <h1>Your Conversations</h1>
+    <button mat-raised-button color="warn" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      Logout
+    </button>
+  </div>
+
+  <div class="conversations-section">
+    <div style="display: flex; justify-content: space-between; align-items: center">
+      <h2>Existing Conversations ({{ conversations.length }})</h2>
+      <button mat-icon-button (click)="refreshConversations()" title="Refresh conversations">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+
+    <ul class="conversation-list">
+      @if (conversations.length === 0) {
+      <li class="no-conversations">
+        <mat-icon class="empty-icon">chat_bubble_outline</mat-icon>
+        <p>No conversations found</p>
+        <p class="empty-hint">Create your first conversation to get started!</p>
+      </li>
+      } @else { @for (conversation of conversations; track conversation.id) {
+      <li class="conversation-item">
+        <a [routerLink]="['/chat', conversation.id]" class="conversation-link">
+          {{ conversation.title }}
+        </a>
+      </li>
+      } }
+    </ul>
+  </div>
+
+  <div class="create-conversation-section">
+    <h2>Create New Conversation</h2>
+    <form [formGroup]="form" (ngSubmit)="createConversation()" class="conversation-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Conversation Title</mat-label>
+        <input
+          matInput
+          formControlName="conversationTitle"
+          placeholder="Enter conversation title"
+          required
+        />
+        <mat-error *ngIf="form.get('conversationTitle')?.hasError('required')">
+          Title is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Select Participants</mat-label>
+        <mat-select formControlName="conversationParticipants" multiple required>
+          <mat-option>
+            <ngx-mat-select-search
+              [formControl]="searchCtrl"
+              placeholderLabel="Search users..."
+              noEntriesFoundLabel="No users found"
+            ></ngx-mat-select-search>
+          </mat-option>
+          <mat-option *ngIf="!hasUsers" disabled> Loading users... </mat-option>
+          <mat-option *ngFor="let user of filteredUsers | async" [value]="user">
+            {{ user.firstName }} {{ user.lastName }} ({{ user.email }})
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('conversationParticipants')?.hasError('required')">
+          At least one participant is required
+        </mat-error>
+        <mat-hint *ngIf="hasUsers"> {{ allUsers.length }} users available </mat-hint>
+      </mat-form-field>
+
+      <div
+        class="selected-participants"
+        *ngIf="form.get('conversationParticipants')?.value?.length"
+      >
+        <h3>Selected Participants:</h3>
+        <div class="participant-chips">
+          <span
+            *ngFor="let participant of form.get('conversationParticipants')?.value"
+            class="participant-chip"
+          >
+            {{ getParticipantName(participant) }}
+          </span>
+        </div>
+      </div>
+
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="!form.valid"
+        class="create-button"
+      >
+        <mat-icon>add</mat-icon>
+        Create Conversation
+      </button>
+    </form>
+  </div>
+</div>

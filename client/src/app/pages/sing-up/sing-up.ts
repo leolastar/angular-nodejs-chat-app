@@ -2,7 +2,6 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth';
-
 @Component({
   selector: 'app-sing-up',
   imports: [FormsModule, RouterLink],
@@ -11,26 +10,27 @@ import { AuthService } from '../../services/auth';
 })
 export class SingUp {
   email = '';
-  displayName = '';
+  firstName = '';
+  lastName = '';
   password = '';
   private auth = inject(AuthService);
   private router = inject(Router);
   submit() {
-    if (!this.email || !this.displayName || !this.password) {
-      alert('Please enter your email, display name and password');
+    if (!this.email || !this.firstName || !this.lastName || !this.password) {
+      alert('Please enter your email, first name, last name and password');
       return;
     } else if (
       this.email.trim() === '' ||
-      this.displayName.trim() === '' ||
+      this.firstName.trim() === '' ||
+      this.lastName.trim() === '' ||
       this.password.trim() === ''
     ) {
-      alert('Please enter your email, display name and password');
+      alert('Please enter your email, first name, last name and password');
       return;
     }
-    this.auth.signUp(this.email, this.password, this.displayName).subscribe(
-      (tokens: any) => {
-        this.auth.setTokens(tokens);
-        this.router.navigate(['/home']);
+    this.auth.signUp(this.email, this.password, this.firstName, this.lastName).subscribe(
+      (user: any) => {
+        this.router.navigate(['/login']);
       },
       (error) => {
         alert(error.error.message);

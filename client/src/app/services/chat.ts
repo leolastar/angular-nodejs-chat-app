@@ -3,44 +3,118 @@ import { io, Socket } from 'socket.io-client';
 import { environment } from '../environments/environment';
 
 export interface ChatMessage {
-  room: string;
-  body: string;
-  sender: string;
-  created_at: string;
+  id: number;
+  content: string;
+  sender_id: number;
+  conversation_id: number;
+  createdAt: string;
+  sender?: {
+    firstName: string;
+    lastName: string;
+  };
 }
 
 @Injectable({ providedIn: 'root' })
 export class ChatService {
   socket!: Socket;
   messages = signal<ChatMessage[]>([]);
+  private isConnected = false;
 
   connect() {
-    const tokens = localStorage.getItem('tokens');
-    const access = tokens ? JSON.parse(tokens).access : undefined;
+    if (this.isConnected) {
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('No authentication token found');
+      return;
+    }
+
     this.socket = io(environment.wsUrl, {
       path: environment.wsPath,
       transports: ['websocket'],
-      auth: { token: access },
+      auth: { token },
     });
 
-    this.socket.on('message', (msg: ChatMessage) => {
-      this.messages.update((list) => [...list, msg]);
+    this.socket.on('connect', () => {
+      console.log('Socket connected');
+      this.isConnected = true;
     });
 
-    this.socket.on('presence', (p: any) => {
-      this.messages.update((list) => [
-        ...list,
-        {
-          room: 'general',
-          body: `${p.user} ${p.action}`,
-          sender: 'system',
-          created_at: new Date().toISOString(),
+    this.socket.on('disconnect', () => {
+      console.log('Socket disconnected');
+      this.isConnected = false;
+    });
+
+    this.socket.on('connect_error', (error) => {
+      console.error('Socket connection error:', error);
+    });
+
+    // Listen for new messages
+    this.socket.on('newMessage', (data: any) => {
+      console.log('New message received:', data);
+      const newMessage: ChatMessage = {
+        id: data.message.id,
+        content: data.content,
+        sender_id: data.sender_id,
+        conversation_id: data.conversation_id,
+        createdAt: data.message.createdAt,
+        sender: {
+          firstName: data.message.sender?.firstName || 'Unknown',
+          lastName: data.message.sender?.lastName || 'User',
         },
-      ]);
+      };
+      this.messages.update((list) => [...list, newMessage]);
+    });
+
+    // Listen for message history
+    this.socket.on('history', (messages: ChatMessage[]) => {
+      console.log('Message history received:', messages);
+      this.messages.set(messages);
+    });
+
+    // Listen for user joined notifications
+    this.socket.on('user_joined', (data: any) => {
+      console.log('User joined:', data);
     });
   }
 
-  send(body: string, room = 'general') {
-    this.socket.emit('message', { body, room });
+  joinConversation(conversationId: number, firstName: string, lastName: string) {
+    if (this.socket && this.isConnected) {
+      this.socket.emit('join_room', {
+        conversation_id: conversationId,
+        firstName,
+        lastName,
+      });
+    }
+  }
+
+  sendMessage(conversationId: number, content: string, firstName: string, lastName: string) {
+    if (this.socket && this.isConnected) {
+      this.socket.emit('sendMessage', {
+        conversation_id: conversationId,
+        content,
+        firstName,
+        lastName,
+      });
+    }
+  }
+
+  loadMessageHistory(conversationId: number) {
+    if (this.socket && this.isConnected) {
+      this.socket.emit('loadHistory', conversationId);
+    }
+  }
+
+  disconnect() {
+    if (this.socket) {
+      this.socket.disconnect();
+      this.isConnected = false;
+    }
+  }
+
+  getMessages() {
+    return this.messages;
   }
 }

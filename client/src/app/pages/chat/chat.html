@@ -1,1 +1,74 @@
-<p>chat works!</p>
+<div class="chat-container">
+  <!-- Chat Header -->
+  <mat-toolbar class="chat-header">
+    <button mat-icon-button (click)="goBack()" class="back-button">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="conversation-info">
+      <h2 class="conversation-title">{{ conversation?.title || 'Loading...' }}</h2>
+      <div class="participants-info" *ngIf="conversation?.participants">
+        <p class="participants-count">{{ conversation?.participants?.length }} participants</p>
+        <div class="participants-list" *ngIf="hasParticipants">
+          <span
+            class="participant-name"
+            *ngFor="let participant of conversation?.participants; let last = last"
+          >
+            {{ getParticipantName(participant) }}<span *ngIf="!last">, </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </mat-toolbar>
+
+  <!-- Messages Container -->
+  <div class="messages-container" id="chat-messages">
+    <div class="messages-list">
+      <div
+        *ngFor="let message of messages(); trackBy: trackByMessageId"
+        class="message-item"
+        [class.current-user]="isCurrentUserMessage(message)"
+        [class.other-user]="!isCurrentUserMessage(message)"
+      >
+        <div class="message-content">
+          <div class="message-text">{{ message.content }}</div>
+          <div class="message-meta">
+            <span class="message-time">{{ getMessageTime(message) }}</span>
+            <span class="message-sender" *ngIf="!isCurrentUserMessage(message) && message.sender">
+              {{ message.sender.firstName }} {{ message.sender.lastName }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div *ngIf="messages().length === 0" class="empty-state">
+        <mat-icon class="empty-icon">chat_bubble_outline</mat-icon>
+        <p>No messages yet. Start the conversation!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message Input -->
+  <div class="message-input-container">
+    <mat-form-field appearance="outline" class="message-input-field">
+      <mat-label>Type a message...</mat-label>
+      <input
+        matInput
+        [(ngModel)]="newMessage"
+        (keydown)="onKeyPress($event)"
+        placeholder="Type a message..."
+        class="message-input"
+      />
+    </mat-form-field>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="sendMessage()"
+      [disabled]="!newMessage.trim()"
+      class="send-button"
+    >
+      <mat-icon>send</mat-icon>
+      Send
+    </button>
+  </div>
+</div>
