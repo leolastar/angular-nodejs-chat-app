@@ -38,12 +38,10 @@ export class ChatService {
     });
 
     this.socket.on('connect', () => {
-      console.log('Socket connected');
       this.isConnected = true;
     });
 
     this.socket.on('disconnect', () => {
-      console.log('Socket disconnected');
       this.isConnected = false;
     });
 
@@ -53,7 +51,6 @@ export class ChatService {
 
     // Listen for new messages
     this.socket.on('newMessage', (data: any) => {
-      console.log('New message received:', data);
       const newMessage: ChatMessage = {
         id: data.message.id,
         content: data.content,
@@ -70,7 +67,6 @@ export class ChatService {
 
     // Listen for message history
     this.socket.on('history', (messages: ChatMessage[]) => {
-      console.log('Message history received:', messages);
       this.messages.set(messages);
     });
 

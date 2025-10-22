@@ -25,7 +25,6 @@ export class SingIn {
     this.auth.signIn(this.email, this.password).subscribe(
       (Response: any) => {
         if (Response.result) {
-          console.log('Response', Response);
           this.auth.setTokens(Response.user, Response.token);
         } else {
           alert(Response.message);

@@ -113,7 +113,6 @@ export class Home implements OnInit {
         this.allUsers = users.filter((user: ConversationParticipant) => {
           const userId = user.id.toString();
           const currentUserId = currentUser?.id?.toString();
-          console.log(`Comparing user ${userId} with current user ${currentUserId}`);
           return userId !== currentUserId;
         });
 

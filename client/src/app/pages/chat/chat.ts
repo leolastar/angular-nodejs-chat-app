@@ -150,18 +150,10 @@ export class Chat implements OnInit, OnDestroy {
   }
 
   loadParticipants() {
-    console.log('Loading participants for conversation:', this.conversationId);
     this.authService.getParticipants(this.conversationId).subscribe({
       next: (participants: any) => {
-        console.log('Participants loaded:', participants);
-        console.log('Participants type:', typeof participants);
-        console.log('Participants is array:', Array.isArray(participants));
-        console.log('Participants length:', participants?.length);
-
         if (this.conversation) {
           this.conversation.participants = participants || [];
-          console.log('Updated conversation participants:', this.conversation.participants);
-          console.log('Participant count:', this.conversation.participants.length);
         }
       },
       error: (error) => {

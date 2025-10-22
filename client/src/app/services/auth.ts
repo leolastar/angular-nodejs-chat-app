@@ -77,15 +77,12 @@ export class AuthService {
 
   // Method to handle token expiration
   handleTokenExpiration() {
-    console.log('Token expired, signing out...');
     this.signOut();
   }
 
   getConversations() {
     const userId = this.getUser()?.id;
     const url = `${environment.apiBase}/conversations/conversations/${userId}`;
-    console.log('Fetching conversations from:', url);
-    console.log('User ID:', userId);
     return this.http.get<any>(url);
   }
 
