@@ -8,14 +8,6 @@
       <h2 class="conversation-title">{{ conversation?.title || 'Loading...' }}</h2>
       <div class="participants-info" *ngIf="conversation?.participants">
         <p class="participants-count">{{ conversation?.participants?.length }} participants</p>
-        <div class="participants-list" *ngIf="hasParticipants">
-          <span
-            class="participant-name"
-            *ngFor="let participant of conversation?.participants; let last = last"
-          >
-            {{ getParticipantName(participant) }}<span *ngIf="!last">, </span>
-          </span>
-        </div>
       </div>
     </div>
   </mat-toolbar>
